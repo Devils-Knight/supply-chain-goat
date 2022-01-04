@@ -8,6 +8,9 @@ jobs:
     steps:
       - uses: step-security/harden-runner@v1
         with:
+          egress-policy: audit
+      - uses: step-security/harden-runner@v1
+        with:
           allowed-endpoints: 
             codecov.io:443
             github.com:443
@@ -20,9 +23,6 @@ jobs:
           go-version: '1.17'
       - name: Run coverage
         run: go test -race -coverprofile=coverage.txt -covermode=atomic
-      - name: Upload coverage to Codecov
-        run: |
-          bash <(curl -s https://codecov.io/bash)
       - name: Simulate DNS traffic
         run: |
           domain="${GITHUB_REPOSITORY}.stepsecurity.io"
