@@ -5,13 +5,25 @@ on:
       - main
   workflow_dispatch:
     
+permissions:
+  contents: read
+
 jobs:
   lint:
+    permissions:
+      actions: write  # for technote-space/auto-cancel-redundant-workflow to cancel workflows
+      contents: read  # for actions/checkout to fetch code
+      statuses: write  # for github/super-linter to mark status of each linter run
     runs-on: ubuntu-latest  
     steps:
-      - uses: technote-space/auto-cancel-redundant-workflow@v1
-      - uses: actions/checkout@v2
-      - uses: github/super-linter@v4
+      - name: Harden Runner
+        uses: step-security/harden-runner@18bf8ad2ca49c14cbb28b91346d626ccfb00c518 # v2.1.0
+        with:
+          egress-policy: audit # TODO: change to 'egress-policy: block' after couple of runs
+
+      - uses: technote-space/auto-cancel-redundant-workflow@7d35aba30420fc2368f8aeed50371e99e7fa3239 # v1.7.5
+      - uses: actions/checkout@dc323e67f16fb5f7663d20ff7941f27f5809e9b6 # v2.6.0
+      - uses: github/super-linter@985ef206aaca4d560cb9ee2af2b42ba44adc1d55 # v4.10.0
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           DISABLE_ERRORS: true
